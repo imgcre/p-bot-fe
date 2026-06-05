@@ -61,7 +61,7 @@ export default function RichList() {
                 })),
                 {
                     name: `其他`,
-                    value: parseFloat(data.total) - data.richs.map(r => parseFloat(r.value)).reduce((a, b) => a + b),
+                    value: parseFloat(data.total) - data.richs.map(r => parseFloat(r.value)).reduce((a, b) => a + b, 0),
                     itemStyle: {
                         color: 'lightgrey' // 红色
                     }

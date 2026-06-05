@@ -300,6 +300,11 @@ type AchvProps = {
     info: AchvInfo
 }
 
+type AchvStyle = React.CSSProperties & {
+    '--background-color'?: string;
+    '--progress'?: string;
+}
+
 function Achv({ info }: AchvProps) {
     const mapRarityColor = (rarity: Rarity) => {
         return {
@@ -315,13 +320,13 @@ function Achv({ info }: AchvProps) {
         <div className={classes.achv_wrapper}>
             <div className={clsx(classes.achv, {[classes.punish]: info.opts.is_punish, [classes.obtaining]: info.obtained_ts == null})} style={{
                 '--background-color': mapRarityColor(info.opts.rarity),
-            } as any}>
+            } as AchvStyle}>
                 <div className={clsx(classes.base_bg, {[classes.opacity]: info.obtained_ts == null})} />
                 {
                     info.obtained_ts == null && (
                         <div className={classes.progress_bg} style={{
                             '--progress': `${info.target_obtained_cnt > 0 ? info.obtained_cnt / info.target_obtained_cnt * 100 : 75}%`
-                        } as any}>
+                        } as AchvStyle}>
 
                         </div>
                     )
@@ -380,10 +385,10 @@ export default function MemberAchvs() {
         <div className={classes.root}  id="target">
             <div className={classes.achvs}>
             {
-                Object.entries(grouped).toSorted(([a], [b]) => getRarityRank(a) - getRarityRank(b)).map(([k, infos]) => (
+                [...Object.entries(grouped)].sort(([a], [b]) => getRarityRank(a) - getRarityRank(b)).map(([k, infos]) => (
                     <div key={k} className={classes.group}>
                         {
-                            infos.toSorted((a, b) => (a.obtained_ts ?? MAX_TIMESTAMP) - (b.obtained_ts ?? MAX_TIMESTAMP)).map(info => <Achv key={info.aka} info={info} />)
+                            [...infos].sort((a, b) => (a.obtained_ts ?? MAX_TIMESTAMP) - (b.obtained_ts ?? MAX_TIMESTAMP)).map(info => <Achv key={info.aka} info={info} />)
                         }
                     </div>
                 ))

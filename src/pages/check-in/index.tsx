@@ -309,7 +309,7 @@ export default function CheckIn() {
                     }}
                     wrapper='div'
                     cursor={false}
-                    splitter={s => s.split(/(.[，,。\.？\?]?)/).filter(c => c != '')}
+                    splitter={s => s.split(/(.[，,。.？?]?)/).filter(c => c != '')}
                 />
             </div>
         </div>
