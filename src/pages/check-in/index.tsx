@@ -94,6 +94,9 @@ export default function CheckIn() {
     const [checkList, setChecklist] = useState({
         background: true,
         moto: false,
+        fonts: false,
+        rank: false,
+        motoVisible: false,
         themeColor: false,
     })
 
@@ -125,7 +128,27 @@ export default function CheckIn() {
     const [rankAnimationStarted, setRankAnimationStarted] = useState(false);
 
     useEffect(() => {
+        let cancelled = false;
+
+        (async () => {
+            try {
+                await document.fonts?.ready;
+            } finally {
+                if(!cancelled) {
+                    setChecklist(cl => ({...cl, fonts: true}));
+                }
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    useEffect(() => {
         if(!rankAnimationStarted) return;
+
+        setChecklist(cl => ({...cl, moto: false, motoVisible: false}));
 
         let _moto = '喵喵喵'
         for(let i = 0; i < 100; i++) {
@@ -137,25 +160,8 @@ export default function CheckIn() {
         }
 
         setMoto(_moto);
-    }, [rankAnimationStarted]);
-
-    useEffect(() => {
-        
         setChecklist(cl => ({...cl, moto: true}));
-        
-        // (async () => {
-        //     for(let i = 0; i< 3; i++) {
-        //         try {
-        //             const resp = await axios.get('https://v1.hitokoto.cn/', {
-        //                 timeout: 1000
-        //             });
-        //             setMoto(resp.data.hitokoto);
-        //             break;
-        //         } catch {}
-        //     }
-        //     setChecklist(cl => ({...cl, moto: true}));
-        // })();
-    }, []);
+    }, [rankAnimationStarted]);
 
     const themeColor = useMemo(() => {
         for(const c of avatarColors) {
@@ -216,6 +222,7 @@ export default function CheckIn() {
                         await new Promise(res => setTimeout(res, 50 + Math.pow(i, 1.7)));
                     }
                     setRanking(data.ranking);
+                    setChecklist(cl => ({...cl, rank: true}));
                 })();
             }}>
                 <div>
@@ -294,23 +301,26 @@ export default function CheckIn() {
                 />
             </div>
             <div className={style.moto}>
-                <TypeAnimation
-                    key={moto}
-                    sequence={[
-                        500,
-                        moto,
-                    ]}
-                    style={{
-                        fontFamily: 'HYLiShengHongXiaKeXing'
-                      }}
-                    speed={{
-                        type: 'keyStrokeDelayInMs',
-                        value: 90,
-                    }}
-                    wrapper='div'
-                    cursor={false}
-                    splitter={s => s.split(/(.[，,。.？?]?)/).filter(c => c != '')}
-                />
+                {moto && (
+                    <TypeAnimation
+                        key={moto}
+                        sequence={[
+                            500,
+                            moto,
+                            () => setChecklist(cl => ({...cl, motoVisible: true})),
+                        ]}
+                        style={{
+                            fontFamily: 'HYLiShengHongXiaKeXing'
+                        }}
+                        speed={{
+                            type: 'keyStrokeDelayInMs',
+                            value: 90,
+                        }}
+                        wrapper='div'
+                        cursor={false}
+                        splitter={s => s.split(/(.[，,。.？?]?)/).filter(c => c != '')}
+                    />
+                )}
             </div>
         </div>
     )
